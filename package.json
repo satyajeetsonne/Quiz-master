@@ -1,0 +1,20 @@
+{
+  "name": "quiz-platform",
+  "version": "1.0.0",
+  "description": "Quiz Platform with Teacher and Student Management",
+  "main": "index.js",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "firebase": "^10.7.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^4.1.3",
+    "vite": "^5.0.0"
+  }
+}

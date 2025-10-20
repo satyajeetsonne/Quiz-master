@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Quiz Master</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --primary-dark: #1557b0;
+            --secondary: #34a853;
+            --danger: #ea4335;
+            --bg-gradient-start: #f8f9fc;
+            --bg-gradient-end: #edf1f7;
+            --text-dark: #202124;
+            --text-light: #5f6368;
+            --white: #ffffff;
+            --shadow: 0 2px 6px rgba(60, 64, 67, 0.15);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .dashboard {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        header {
+            background: var(--white);
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-right: 0.5rem;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var (--primary);
+        }
+        
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .nav-link.active {
+            color: var(--primary);
+        }
+        
+        .greeting {
+            margin: 2rem 0;
+        }
+        
+        .greeting h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--white);
+            box-shadow: var(--shadow);
+            border-radius: 8px;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card i {
+            font-size: 2.5rem;
+            color: var(--sky-blue);
+            margin-right: 1.5rem;
+            opacity: 0.9;
+        }
+        
+        .stat-info {
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--gradient-end);
+            margin-bottom: 0.25rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .recent-results {
+            margin-top: 2rem;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .result-card {
+            background: var(--white);
+            box-shadow: var(--shadow);
+            border-radius: 8px;
+            padding: 1.5rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .result-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        
+        .result-card h3 {
+            margin-bottom: 0.5rem;
+        }
+        
+        .score {
+            font-weight: 600;
+        }
+        
+        .date, .time {
+            font-size: 0.9rem;
+            color: var (--secondary);
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn i {
+            font-size: 1.1rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: rgba(74, 107, 255, 0.05);
+        }
+        
+        .logout-btn {
+            background: var(--danger);
+            color: var(--white);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+        }
+        
+        .logout-btn:hover {
+            background: #d93025;
+        }
+        
+        .table-card {
+            background-color: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            font-weight: 600;
+            color: var (--secondary);
+        }
+        
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .badge-success {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+        }
+        
+        .badge-warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--warning);
+        }
+        
+        .badge-danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+        }
+        
+        .score-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .score-high {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+        }
+        
+        .score-medium {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--warning);
+        }
+        
+        .score-low {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+        }
+        
+        .high-score {
+            border-top: 4px solid var(--success);
+        }
+        
+        .low-score {
+            border-top: 4px solid var(--danger);
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                padding: 1rem;
+                gap: 1rem;
+            }
+        
+            .nav-actions {
+                width: 100%;
+                justify-content: center;
+            }
+        
+            .stats-grid {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+        
+            .stat-value {
+                font-size: 2rem;
+            }
+        }
+
+        .icon-large {
+            font-size: 2rem;
+            vertical-align: middle;
+        }
+
+        .icon-medium {
+            font-size: 1.5rem;
+            vertical-align: middle;
+        }
+
+        .nav-actions .btn i,
+        .nav-actions .logout-btn i {
+            font-size: 1.2rem;
+        }
+
+        .result-card::before {
+            font-family: "Font Awesome 5 Free";
+            content: "\f080";  /* FontAwesome chart icon */
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.2rem;
+            color: var(--primary);
+            opacity: 0.5;
+        }
+
+        /* Remove action-button styles as they're no longer needed */
+        .action-button,
+        .action-button:hover {
+            display: none;
+        }
+
+        /* Sidebar Styles */
+        .dashboard {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #1e1e2d;
+            box-shadow: var(--shadow);
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            padding: 0;
+            color: rgba(255,255,255,0.7);
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--white);
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            margin-bottom: 0.25rem;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: all 0.3s;
+            gap: 1rem;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        /* Profile Summary Card */
+        .profile-summary {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .profile-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .profile-info h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-info p {
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+        }
+
+        /* Achievements Section */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .achievement-card {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .achievement-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .achievement-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .achievement-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .achievement-desc {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">QuizMaster</div>
+            </div>
+            <div class="sidebar-nav">
+                <a href="#" class="nav-item active">
+                    <span class="nav-icon">📊</span> Dashboard
+                </a>
+                <!-- <a href="profile.html" class="nav-item">
+                    <span class="nav-icon">👤</span> Profile
+                </a> -->
+                <a href="quiz_list.html" class="nav-item">
+                    <span class="nav-icon">🧠</span> Available Quizzes
+                </a>
+                <a href="results.html" class="nav-item">
+                    <span class="nav-icon">📈</span> Results
+                </a>
+                <a href="profile.html" class="nav-item">
+                    <span class="nav-icon">👤</span> Profile
+                </a>
+                <a href="#" class="nav-item" onclick="handleSignOut()">
+                    <span class="nav-icon">🚪</span> Logout
+                </a>
+            </div>
+        </aside>
+        
+        <main class="main-content">
+            <header>
+                <div class="header-content">
+                    <div class="logo">
+                        <i class="fas fa-graduation-cap"></i>
+                        <h1>Quiz Master</h1>
+                    </div>
+                    <div class="nav-actions">
+                        <a href="quiz_list.html" class="btn btn-primary">
+                            <i class="fas fa-clipboard-list"></i> Available Quizzes
+                        </a>
+                        <button onclick="handleSignOut()" class="logout-btn">
+                            <i class="fas fa-sign-out-alt"></i> Sign Out
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <main>
+                <div class="greeting">
+                    <h2>Welcome back, <span id="studentName">Student</span>!</h2>
+                </div>
+
+                <!-- Profile Summary -->
+                <div class="profile-summary">
+                    <div class="profile-image" id="profileInitials">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="profile-info">
+                        <h3 id="profileName">Loading...</h3>
+                        <p><i class="fas fa-user-graduate"></i> Student</p>
+                        <p><i class="fas fa-clock"></i> Last login: <span id="lastLoginTime">Recently</span></p>
+                    </div>
+                </div>
+
+                <!-- Achievements Section -->
+                <div class="achievements-grid">
+                    <div class="achievement-card">
+                        <div class="achievement-icon">🎯</div>
+                        <h3 class="achievement-title">Perfect Score</h3>
+                        <p class="achievement-desc">Score 100% on any quiz</p>
+                    </div>
+                    <div class="achievement-card">
+                        <div class="achievement-icon">📈</div>
+                        <h3 class="achievement-title">Improved Score</h3>
+                        <p class="achievement-desc">Beat your previous score on a quiz</p>
+                    </div>
+                    <div class="achievement-card">
+                        <div class="achievement-icon">⚡</div>
+                        <h3 class="achievement-title">Fast Finisher</h3>
+                        <p class="achievement-desc">Complete a quiz in under 5 minutes</p>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <i class="fas fa-check-circle icon-large"></i>
+                        <div class="stat-info">
+                            <h3>Completed Quizzes</h3>
+                            <p class="stat-value" id="completedQuizzes">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-star icon-large"></i>
+                        <div class="stat-info">
+                            <h3>Average Score</h3>
+                            <p class="stat-value" id="averageScore">0%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <section class="recent-results">
+                    <h2><i class="fas fa-chart-bar icon-medium"></i> Recent Results</h2>
+                    <div id="recentResults" class="results-grid">
+                        <!-- Results will be loaded here -->
+                    </div>
+                </section>
+            </main>
+        </main>
+    </div>
+
+    <script type="module">
+        import { auth, db } from "./firebase-config.js";
+        import { signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+        import { 
+            collection, 
+            query, 
+            where, 
+            orderBy,
+            limit, 
+            getDocs,
+            doc,
+            getDoc
+        } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    loadStudentData(user.uid);
+                } else {
+                    window.location.href = 'login.html';
+                }
+            });
+        });
+
+        async function loadStudentData(userId) {
+            try {
+                // Get user data
+                const userDocRef = doc(db, 'users', userId);
+                const userSnap = await getDoc(userDocRef);
+                const userData = userSnap.data();
+                
+                // Update profile section
+                document.getElementById('studentName').textContent = userData?.name || 'Student';
+                document.getElementById('profileName').textContent = userData?.name || 'Student';
+                if (userData?.name) {
+                    const initials = userData.name
+                        .split(' ')
+                        .map(word => word[0])
+                        .join('')
+                        .toUpperCase();
+                    document.getElementById('profileInitials').innerHTML = initials;
+                }
+                document.getElementById('lastLoginTime').textContent = userData?.lastLogin ? 
+                    new Date(userData.lastLogin.toDate()).toLocaleString() : 'Recently';
+
+                // Get quiz results
+                const resultsQuery = query(
+                    collection(db, 'quiz_results'),
+                    where('userId', '==', userId),
+                    orderBy('completedAt', 'desc')
+                );
+                
+                const resultsSnap = await getDocs(resultsQuery);
+                const results = [];
+                let totalScore = 0;
+                let totalPossiblePoints = 0;
+                let perfectScores = 0;
+                let improvedScores = new Set();
+                let fastFinishes = 0;
+
+                // Process results and calculate achievements
+                const processedQuizzes = new Map(); // Track best scores per quiz
+                
+                for (const docSnap of resultsSnap.docs) {
+                    const result = { id: docSnap.id, ...docSnap.data() };
+                    const quizDocRef = doc(db, 'quizzes', result.quizId);
+                    const quizDoc = await getDoc(quizDocRef);
+                    const quizData = quizDoc.data();
+                    
+                    if (quizData) {
+                        result.quizTitle = quizData.title;
+                        result.totalQuestions = quizData.questions.length;
+                        totalScore += result.score;
+                        totalPossiblePoints += result.totalQuestions;
+                        
+                        // Check achievements
+                        if (result.score === result.totalQuestions) {
+                            perfectScores++;
+                        }
+                        if (result.timeTaken < 300) { // Less than 5 minutes
+                            fastFinishes++;
+                        }
+                        
+                        // Track improvement
+                        const previousBest = processedQuizzes.get(result.quizId);
+                        if (previousBest) {
+                            const previousScore = (previousBest.score / previousBest.totalQuestions) * 100;
+                            const currentScore = (result.score / result.totalQuestions) * 100;
+                            if (currentScore > previousScore) {
+                                improvedScores.add(result.quizId);
+                            }
+                        }
+                        processedQuizzes.set(result.quizId, result);
+                        
+                        if (results.length < 5) { // Keep only 5 most recent for display
+                            results.push(result);
+                        }
+                    }
+                }
+
+                // Update achievements
+                updateAchievements(perfectScores, improvedScores.size, fastFinishes);
+
+                // Update statistics
+                document.getElementById('completedQuizzes').textContent = resultsSnap.size;
+                if (totalPossiblePoints > 0) {
+                    const averageScorePercentage = Math.round((totalScore / totalPossiblePoints) * 100);
+                    document.getElementById('averageScore').textContent = `${averageScorePercentage}%`;
+                }
+
+                // Display recent results
+                displayResults(results);
+
+            } catch (error) {
+                console.error('Error loading student data:', error);
+                showError();
+            }
+        }
+
+        function updateAchievements(perfectScores, improvedScores, fastFinishes) {
+            const achievementCards = document.querySelectorAll('.achievement-card');
+            
+            // Perfect Score Achievement
+            if (perfectScores > 0) {
+                achievementCards[0].style.background = 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
+                achievementCards[0].querySelector('.achievement-desc').textContent = 
+                    `Achieved ${perfectScores} time${perfectScores > 1 ? 's' : ''}!`;
+            }
+            
+            // Improved Score Achievement
+            if (improvedScores > 0) {
+                achievementCards[1].style.background = 'linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%)';
+                achievementCards[1].querySelector('.achievement-desc').textContent = 
+                    `Improved in ${improvedScores} quiz${improvedScores > 1 ? 'zes' : ''}!`;
+            }
+            
+            // Fast Finisher Achievement
+            if (fastFinishes > 0) {
+                achievementCards[2].style.background = 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)';
+                achievementCards[2].querySelector('.achievement-desc').textContent = 
+                    `${fastFinishes} fast completion${fastFinishes > 1 ? 's' : ''}!`;
+            }
+        }
+
+        function displayResults(results) {
+            const recentResults = document.getElementById('recentResults');
+            if (results.length === 0) {
+                recentResults.innerHTML = `
+                    <div class="empty-state">
+                        <p>No quiz results yet. Try taking a quiz!</p>
+                        <a href="quiz_list.html" class="btn btn-primary">Start a Quiz</a>
+                    </div>
+                `;
+                return;
+            }
+            
+            recentResults.innerHTML = results.map(result => {
+                const scorePercentage = Math.round((result.score / result.totalQuestions) * 100);
+                const scoreClass = scorePercentage >= 70 ? 'high-score' : 
+                                 scorePercentage <= 40 ? 'low-score' : '';
+                
+                return `
+                    <div class="result-card ${scoreClass}">
+                        <h3>${result.quizTitle || 'Untitled Quiz'}</h3>
+                        <p class="score">Score: ${result.score}/${result.totalQuestions} (${scorePercentage}%)</p>
+                        <p class="date">Completed: ${result.completedAt.toDate().toLocaleDateString()}</p>
+                        <p class="time">Time taken: ${Math.round(result.timeTaken / 60)} minutes</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function showError() {
+            document.getElementById('completedQuizzes').textContent = '0';
+            document.getElementById('averageScore').textContent = '0%';
+            document.getElementById('recentResults').innerHTML = `
+                <div class="error-message">
+                    <p>Failed to load your quiz data. Please try refreshing the page.</p>
+                </div>
+            `;
+        }
+
+        window.handleSignOut = async () => {
+            try {
+                await signOut(auth);
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('Error signing out:', error);
+                alert('Failed to sign out. Please try again.');
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz - Quiz Master</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #e0f7ff 0%, #c5e8ff 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .main-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 84, 166, 0.2);
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        h1 {
+            color: #0054a6;
+            font-size: 32px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .quiz-description {
+            color: #4a90e2;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 16px;
+        }
+        
+        #quizContainer {
+            margin-bottom: 30px;
+        }
+        
+        .question {
+            background: #f0f8ff;
+            border-left: 5px solid #4a90e2;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .question-text {
+            font-size: 18px;
+            color: #0054a6;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .options-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .option {
+            background: white;
+            border: 2px solid #cce4ff;
+            border-radius: 12px;
+            padding: 15px 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option:hover {
+            border-color: #4a90e2;
+            background: #f8fbff;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            border-color: #4a90e2;
+            background: #e6f2ff;
+            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.2);
+        }
+
+        .option-prefix {
+            background: #4a90e2;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .option-text {
+            flex-grow: 1;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .option.selected .option-prefix {
+            background: #2563eb;
+        }
+
+        .option.correct {
+            border-color: #10b981;
+            background: #ecfdf5;
+        }
+
+        .option.incorrect {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .option.correct .option-prefix {
+            background: #10b981;
+        }
+
+        .option.incorrect .option-prefix {
+            background: #ef4444;
+        }
+
+        .option-feedback {
+            position: absolute;
+            right: 15px;
+            color: #10b981;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .option.selected .option-feedback {
+            opacity: 1;
+        }
+
+        .option.correct .option-feedback {
+            color: #10b981;
+        }
+
+        .option.incorrect .option-feedback {
+            color: #ef4444;
+        }
+        
+        #submitQuiz {
+            display: block;
+            width: 200px;
+            margin: 30px auto;
+            padding: 14px 20px;
+            background: linear-gradient(90deg, #4a90e2, #0054a6);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+        }
+        
+        #submitQuiz:hover {
+            background: linear-gradient(90deg, #3a80d2, #004796);
+            transform: translateY(-2px);
+        }
+        
+        #quizResult {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f0f8ff;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            display: none;
+        }
+        
+        .result-header {
+            font-size: 24px;
+            color: #0054a6;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .result-score {
+            font-size: 36px;
+            color: #0054a6;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        .result-feedback {
+            text-align: center;
+            color: #4a90e2;
+            margin-bottom: 20px;
+        }
+        
+        .result-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+        }
+        
+        .result-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .result-correct {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .result-incorrect {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .floating-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        
+        .shape {
+            position: absolute;
+            background: rgba(74, 144, 226, 0.05);
+            border-radius: 50%;
+        }
+        
+        .shape-1 {
+            width: 150px;
+            height: 150px;
+            top: -30px;
+            right: -30px;
+        }
+        
+        .shape-2 {
+            width: 80px;
+            height: 80px;
+            bottom: 50px;
+            left: -20px;
+        }
+        
+        .shape-3 {
+            width: 60px;
+            height: 60px;
+            top: 60%;
+            right: 10%;
+        }
+
+        header {
+            background: #0054a6;
+            padding: 10px 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        .nav-actions a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            background: #4a90e2;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .nav-actions a:hover {
+            background: #3a80d2;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-pencil-alt"></i>
+                <h1>Quiz Master</h1>
+            </div>
+            <div class="nav-actions">
+                <a href="student_das.html" class="btn btn-secondary back-button">
+                    <i class="fas fa-arrow-left"></i> Return to Dashboard
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+        
+        <div class="page-header">
+            <h1 id="quizTitle">Quiz Title</h1>
+            <p class="quiz-description">Answer all questions and test your knowledge!</p>
+        </div>
+        
+        <div id="quizContainer">
+            <!-- Quiz questions will be loaded here by JavaScript -->
+        </div>
+        
+        <button id="submitQuiz">Submit Quiz</button>
+        
+        <div id="quizResult">
+            <!-- Results will be displayed here after submission -->
+        </div>
+    </div>
+
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="quiz_page.js"></script>
+    
+    <script type="module">
+        import { auth, db } from "./firebase-config.js";
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+        // Add function to handle dashboard navigation
+        async function redirectToDashboard() {
+            const user = auth.currentUser;
+            if (user) {
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                const userData = userDoc.data();
+                window.location.href = userData.role === 'teacher' ? 'teacher_dash.html' : 'student_das.html';
+            } else {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Update back button click handler
+        document.querySelector('.back-button').addEventListener('click', redirectToDashboard);
+    </script>
+    
+    <script>
+        // Example JavaScript to show interactivity - replace with your actual quiz_page.js functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Example of how the option selection might work
+            document.body.addEventListener('click', function(e) {
+                if (e.target.classList.contains('option') || e.target.parentElement.classList.contains('option')) {
+                    let option = e.target.classList.contains('option') ? e.target : e.target.parentElement;
+                    let questionOptions = option.parentElement.querySelectorAll('.option');
+                    
+                    questionOptions.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    
+                    // Select the radio button
+                    const radio = option.querySelector('input[type="radio"]');
+                    if (radio) radio.checked = true;
+                }
+            });
+            
+            // Example submit button click - replace with your actual submission logic
+            document.getElementById('submitQuiz').addEventListener('click', function() {
+                // This would be replaced by your actual score calculation
+                document.getElementById('quizResult').style.display = 'block';
+                document.getElementById('quizResult').innerHTML = `
+                    <div class="result-header">Quiz Results</div>
+                    <div class="result-score">7/10</div>
+                    <div class="result-feedback">Great job! You're doing well!</div>
+                    
+                    <!-- Example of result details -->
+                    <div class="result-details">
+                        <div class="result-item">
+                            <div class="result-icon result-correct">✓</div>
+                            <div class="result-content">
+                                <div class="question-text">Question 1: What is the capital of France?</div>
+                                <div>Your answer: Paris (Correct)</div>
+                            </div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-icon result-incorrect">✗</div>
+                            <div class="result-content">
+                                <div class="question-text">Question 2: What is the largest ocean?</div>
+                                <div>Your answer: Atlantic (Incorrect)</div>
+                                <div>Correct answer: Pacific</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Scroll to results
+                document.getElementById('quizResult').scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>
