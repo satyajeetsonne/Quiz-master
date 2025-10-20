@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Take Quiz - Quiz Master</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --sky-blue: #64B5F6;
+            --light-sky: #E3F2FD;
+            --teal-light: #81D4FA;
+            --teal-dark: #0097A7;
+            --teal-gradient: #26C6DA;
+            --border-blue: #BBDEFB;
+            --text-navy: #0D47A1;
+            --box-shadow: 0 2px 8px rgba(100, 181, 246, 0.12);
+            --hover-shadow: 0 4px 12px rgba(100, 181, 246, 0.18);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-sky);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--sky-blue);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            text-decoration: none;
+        }
+
+        .logo i {
+            font-size: 24px;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-nav {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-back {
+            background-color: white;
+            color: var(--primary-blue);
+        }
+
+        .btn-back:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Main container with Flexbox layout */
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--box-shadow);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Quiz content wrapper with flex layout */
+        #quizContent {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%;
+        }
+
+        /* Questions container with flex layout */
+        .questions-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%;
+        }
+
+        .question {
+            margin: 0; /* Remove margin as we're using gap */
+            padding: 1.5rem;
+            border: 2px solid var(--border-blue);
+            border-radius: 12px;
+            background: white;
+            transition: all 0.3s ease;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            gap: 1.5rem;
+        }
+
+        /* Options container with flex layout */
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .option {
+            margin: 0; /* Remove margin as we're using gap */
+            padding: 1.2rem;
+            border: 2px solid #cce6ff;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.1rem;
+            position: relative;
+            overflow: hidden;
+            color: var(--text-navy);
+            min-height: 60px; /* Ensure consistent height */
+            background: var(--white);
+        }
+
+        /* Timer and controls layout */
+        .quiz-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+            align-items: center;
+        }
+
+        .timer {
+            width: 100%;
+            max-width: 300px;
+            margin: 0; /* Remove margin as we're using gap */
+        }
+
+        .btn-submit {
+            width: 100%;
+            max-width: 300px;
+            margin: 0; /* Remove margin as we're using gap */
+        }
+
+        /* Quiz result layout */
+        #quizResult {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%;
+        }
+
+        .question-result {
+            margin: 0; /* Remove margin as we're using gap */
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                margin: 1rem;
+                padding: 1rem;
+            }
+
+            .option {
+                min-height: 50px; /* Slightly smaller on mobile */
+            }
+        }
+
+        .quiz-header {
+            margin-bottom: 2.5rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--sky-blue) 0%, var(--teal-dark) 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .quiz-title {
+            color: white;
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .quiz-title::before {
+            content: "📘";
+            font-size: 2.2rem;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        .question:nth-child(even) {
+            background: white;
+        }
+
+        .question:nth-child(odd) {
+            background: #FFFFFF;
+        }
+
+        .question:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .question::before {
+            content: "❓";
+            margin-right: 8px;
+            font-size: 1.4rem;
+        }
+
+        .option:hover {
+            border-color: var(--sky-blue);
+            background: var(--border-blue);
+            transform: translateX(5px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .option.selected {
+            border-color: var(--teal-dark);
+            background: var(--teal-light);
+            box-shadow: inset 0 0 0 2px var(--deep-blue);
+        }
+
+        .option::before {
+            content: attr(data-option);
+            font-size: 1.2rem;
+            font-weight: 600;
+            min-width: 30px;
+            height: 30px;
+            background: var(--sky-blue);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timer {
+            width: 100%;
+            max-width: 320px;
+            margin: 2rem auto;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(100, 181, 246, 0.15),
+                       0 0 0 1px rgba(100, 181, 246, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .timer span {
+            font-size: 1.5rem;
+            color: var(--text-navy);
+            font-weight: 500;
+        }
+
+        .timer strong {
+            font-weight: 700;
+            color: var(--teal-dark);
+        }
+
+        .timer.warning {
+            background: linear-gradient(135deg, #fff9c4 0%, #fff3e0 100%);
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.15),
+                       0 0 0 1px rgba(255, 193, 7, 0.1);
+        }
+
+        .timer.warning strong {
+            color: #f39c12;
+        }
+
+        .timer.danger {
+            background: linear-gradient(135deg, #ffebee 0%, #fbe9e7 100%);
+            box-shadow: 0 4px 15px rgba(239, 83, 80, 0.15),
+                       0 0 0 1px rgba(239, 83, 80, 0.1);
+        }
+
+        .timer.danger strong {
+            color: #e74c3c;
+        }
+
+        .timer::before {
+            content: "⏳";
+            font-size: 1.8rem;
+            margin-right: 4px;
+        }
+
+        .timer::after {
+            content: "🕒";
+            font-size: 1.8rem;
+            margin-left: 4px;
+        }
+
+        .timer.warning {
+            color: #f39c12;
+            border-color: #f39c12;
+        }
+
+        .timer.danger {
+            color: #e74c3c;
+            border-color: #e74c3c;
+        }
+
+        .timer i {
+            font-size: 1.8rem;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, var(--teal-gradient) 0%, var(--teal-dark) 100%);
+            color: white;
+            border: none;
+            padding: 1.2rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 2rem;
+            transition: background-color 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            transform-origin: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-submit::before {
+            content: "✅";
+            margin-right: 8px;
+            font-size: 1.3rem;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px) scale(1.02);
+            background: linear-gradient(135deg, var(--teal-gradient) 20%, var(--teal-dark) 100%);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+            background: linear-gradient(135deg, var(--gradient-end), var(--gradient-start));
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-submit:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-back i {
+            font-size: 1.2rem;
+        }
+
+        .btn-back::before {
+            content: "⬅️";
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+
+        .question-result {
+            margin: 1rem 0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid;
+            transition: transform 0.2s ease;
+        }
+
+        .question-result:hover {
+            transform: translateX(5px);
+        }
+
+        .question-result.correct {
+            background-color: #f0fff4;
+            border-left-color: #31c48d;
+        }
+
+        .question-result.incorrect {
+            background-color: #fff5f5;
+            border-left-color: #e53e3e;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--dark-blue);
+        }
+
+        .score-value {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--teal-dark);
+            margin: 1rem 0;
+        }
+
+        .score-message {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .loading i {
+            font-size: 2rem;
+            color: var(--teal-dark);
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 1rem;
+                border-radius: 12px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .quiz-header {
+                padding: 1.5rem;
+                margin: 1rem 0.5rem 2rem;
+            }
+
+            .quiz-title {
+                font-size: 1.6rem;
+            }
+
+            .quiz-title::before {
+                font-size: 1.8rem;
+            }
+
+            .timer {
+                padding: 1.2rem;
+                margin: 1.5rem auto;
+            }
+
+            .timer span {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="#" class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <h1>Quiz Master</h1>
+            </a>
+            <div class="nav-actions">
+                <a href="student_das.html" class="btn-nav btn-back">
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div id="quizContent">
+            <div class="loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading quiz...</p>
+            </div>
+        </div>
+        <div id="quizResult"></div>
+    </div>
+
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="take_quiz.js"></script>
+</body>
+</html>

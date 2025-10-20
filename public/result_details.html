@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Quiz Results - Quiz Master</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Student Quiz Results</h2>
+        <table id="resultDetails">
+            <tr>
+                <th>Question</th>
+                <th>Student Answer</th>
+                <th>Correct</th>
+            </tr>
+        </table>
+        <button onclick="window.history.back()">Back</button>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const params = new URLSearchParams(window.location.search);
+        const resultId = params.get("id");
+
+        db.collection("results").doc(resultId).get().then(doc => {
+            if (doc.exists) {
+                let result = doc.data();
+                let table = document.getElementById("resultDetails");
+                result.answers.forEach(answer => {
+                    table.innerHTML += `
+                        <tr>
+                            <td>${answer.question}</td>
+                            <td>${answer.selectedAnswer}</td>
+                            <td>${answer.correct ? '✅' : '❌'}</td>
+                        </tr>
+                    `;
+                });
+            } else {
+                alert("No result found!");
+            }
+        });
+    </script>
+</body>
+</html>

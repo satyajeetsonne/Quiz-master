@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management - Quiz Master</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#1a73e8',
+                        'light-blue': '#f3f9ff',
+                        'sky-blue': '#64B5F6',
+                        'border-blue': '#E3F2FD',
+                        'text-navy': '#1a237e',
+                        'teal-dark': '#0d9488',
+                        'success': '#22c55e',
+                        'danger': '#ef4444'
+                    },
+                    fontFamily: {
+                        'sans': ['Poppins', 'Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        [data-tooltip]:before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.5rem 1rem;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+        }
+
+        [data-tooltip]:hover:before {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+<body class="bg-light-blue min-h-screen font-sans">
+    <!-- Top Navbar -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-6">
+                <a href="teacher_dash.html" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-light-blue text-primary hover:bg-border-blue transition-all">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Dashboard
+                </a>
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-graduation-cap text-3xl text-primary"></i>
+                    <h1 class="text-xl font-semibold text-text-navy">Quiz Master</h1>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-full bg-light-blue flex items-center justify-center text-primary text-xl">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span class="text-text-navy" id="teacherName">Loading...</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Horizontal Toolbar -->
+    <div class="max-w-7xl mx-auto px-4 mt-6">
+        <div class="bg-white rounded-xl shadow-sm p-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-center">
+                <!-- Export & Feedback Buttons -->
+                <div class="lg:col-span-2 flex gap-4">
+                    <button id="exportBtn" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-light-blue text-primary rounded-lg hover:bg-border-blue transition-all" data-tooltip="Download as CSV">
+                        <i class="fas fa-download"></i>
+                        Export Data
+                    </button>
+                    <button id="bulkFeedbackBtn" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-blue-600 transition-all" data-tooltip="Send messages to students">
+                        <i class="fas fa-comment"></i>
+                        Send Feedback
+                    </button>
+                </div>
+                
+                <!-- Search Field -->
+                <div class="relative">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-primary"></i>
+                    <input type="text" id="searchInput" placeholder="Search by name or email..." class="w-full pl-10 pr-4 py-2.5 border-2 border-border-blue rounded-lg focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                </div>
+
+                <!-- Sort Dropdown -->
+                <select id="sortBy" title="Sort students by criteria" class="w-full px-4 py-2.5 border-2 border-border-blue rounded-lg bg-white focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer">
+                    <option value="name">Sort by Name</option>
+                    <option value="score">Sort by Average Score</option>
+                    <option value="quizzes">Sort by Quizzes Taken</option>
+                    <option value="lastActivity">Sort by Last Activity</option>
+                </select>
+
+                <!-- Status Filter -->
+                <select id="statusFilter" title="Filter students by status" class="w-full px-4 py-2.5 border-2 border-border-blue rounded-lg bg-white focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer">
+                    <option value="all">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 mt-6">
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <!-- Student Table -->
+            <table class="student-table w-full">
+                <thead>
+                    <tr>
+                        <th class="text-left p-4 bg-light-blue text-text-navy font-semibold border-b-2 border-border-blue">Student Name</th>
+                        <th class="text-left p-4 bg-light-blue text-text-navy font-semibold border-b-2 border-border-blue">Email</th>
+                        <th class="text-left p-4 bg-light-blue text-text-navy font-semibold border-b-2 border-border-blue">Total Quizzes</th>
+                        <th class="text-left p-4 bg-light-blue text-text-navy font-semibold border-b-2 border-border-blue">Avg. Score</th>
+                        <th class="text-left p-4 bg-light-blue text-text-navy font-semibold border-b-2 border-border-blue">Last Activity</th>
+                        <th class="text-left p-4 bg-light-blue text-text-navy font-semibold border-b-2 border-border-blue">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="studentTableBody">
+                    <!-- Student data will be populated here -->
+                </tbody>
+            </table>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="hidden text-center py-12 text-text-navy">
+                <i class="fas fa-users text-4xl text-sky-blue mb-4"></i>
+                <h3 class="text-xl font-semibold mb-2">No Students Found</h3>
+                <p class="text-gray-600">Try adjusting your search or filters to find students.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Details Modal -->
+    <div class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" id="studentModal">
+        <div class="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-auto m-4 p-6 relative">
+            <button class="absolute right-4 top-4 text-2xl text-gray-500 hover:text-gray-700 transition-colors" id="closeModal">&times;</button>
+            <h2 id="studentName" class="text-2xl font-semibold text-text-navy mb-6"></h2>
+            <div id="studentDetails" class="space-y-4"></div>
+            <canvas id="performanceChart" class="mt-8 mb-6"></canvas>
+            <div id="quizList" class="space-y-3"></div>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" id="feedbackModal">
+        <div class="bg-white rounded-2xl w-full max-w-2xl m-4 p-6 relative">
+            <button class="absolute right-4 top-4 text-2xl text-gray-500 hover:text-gray-700 transition-colors" id="closeFeedbackModal">&times;</button>
+            <h2 class="text-2xl font-semibold text-text-navy mb-6">Send Feedback to Students</h2>
+            <div class="space-y-6">
+                <div class="space-y-2">
+                    <label for="studentSelect" class="block font-medium text-gray-700">Select Students:</label>
+                    <select id="studentSelect" multiple class="w-full min-h-[150px] px-4 py-2 border-2 border-border-blue rounded-lg focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10">
+                        <!-- Will be populated dynamically -->
+                    </select>
+                </div>
+                <div class="space-y-2">
+                    <label for="feedbackMessage" class="block font-medium text-gray-700">Feedback Message:</label>
+                    <textarea id="feedbackMessage" rows="4" placeholder="Enter your feedback message..." class="w-full px-4 py-2 border-2 border-border-blue rounded-lg focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 resize-none"></textarea>
+                </div>
+                <button class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-blue-600 transition-all" id="sendFeedbackBtn">
+                    <i class="fas fa-paper-plane"></i>
+                    Send Feedback
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="student_management.js"></script>
+</body>
+</html>

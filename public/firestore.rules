@@ -1,0 +1,91 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isCollegeEmail() {
+      return request.auth.token.email.matches('.*@pvgcoet\\.ac\\.in$');
+    }
+    
+    function isTeacher() {
+      return isAuthenticated() && isCollegeEmail() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "teacher";
+    }
+
+    function isStudent() {
+      return isAuthenticated() && isCollegeEmail() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "student";
+    }
+
+    function isAdmin() {
+      return request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Allow admin full access
+    match /users/{userId} {
+      allow read: if request.auth != null && (
+        request.auth.uid == userId || 
+        isTeacher() ||  // Allow teachers to read student data
+        isAdmin()
+      );
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && (
+        request.auth.uid == userId || isAdmin()
+      );
+      
+      // Allow access to completedQuizzes subcollection
+      match /completedQuizzes/{quizId} {
+        allow read: if request.auth != null && (
+          request.auth.uid == userId ||
+          isTeacher() ||  // Allow teachers to read student quiz data
+          isAdmin()
+        );
+        allow write: if request.auth != null && (
+          request.auth.uid == userId || isAdmin()
+        );
+      }
+    }
+
+    // Quizzes collection
+    match /quizzes/{quizId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && (
+        isAdmin() ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'teacher'
+      );
+    }
+
+    // Quiz results collection
+    match /quiz_results/{resultId} {
+      allow read: if request.auth != null && (
+        resource.data.userId == request.auth.uid ||
+        isTeacher() ||  // Allow teachers to read student quiz results
+        isAdmin()
+      );
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && (
+        request.auth.uid == resource.data.userId || isAdmin()
+      );
+    }
+
+    // Students collection
+    match /students/{studentId} {
+      allow read: if request.auth != null && (
+        isTeacher() ||  // Allow teachers to read all student data
+        isAdmin()       // Allow admins to read all student data
+      );
+      allow create: if request.auth != null && (
+        isTeacher() || isAdmin()
+      );
+      allow update: if request.auth != null && (
+        isTeacher() || isAdmin()
+      );
+      allow delete: if request.auth != null && isAdmin(); // Only admins can delete student records
+    }
+  }
+}

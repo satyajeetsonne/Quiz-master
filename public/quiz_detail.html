@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Master - Quiz Details</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a56db;
+            --primary-dark: #1e429f;
+            --primary-light: #e1effe;
+            --secondary: #3f83f8;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --white: #ffffff;
+            --success: #059669;
+            --gray-light: #f3f4f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: #f9fafb;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 10px;
+        }
+
+        .card {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 15px 20px;
+            background-color: var(--primary-light);
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .quiz-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 14px;
+        }
+
+        .quiz-info span {
+            display: flex;
+            align-items: center;
+        }
+
+        .quiz-info i {
+            margin-right: 5px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .quiz-description {
+            margin-bottom: 30px;
+            color: var(--text-light);
+            background-color: var(--gray-light);
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: var(--white);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary-light);
+        }
+
+        .btn-submit {
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            padding: 15px;
+            font-size: 18px;
+        }
+
+        .quiz-progress {
+            height: 8px;
+            background-color: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0;
+            transition: width 0.3s ease;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+        }
+
+        .modal-score {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .visible {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-brain"></i>
+                    Quiz Master
+                </div>
+                <nav>
+                    <a href="index.html" class="btn btn-secondary">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1 id="quizTitle" class="card-title">Loading Quiz...</h1>
+                <div class="quiz-info">
+                    <span><i class="fas fa-question-circle"></i> <span id="questionCount">0</span> Questions</span>
+                    <span><i class="fas fa-clock"></i> <span id="timeLimit">N/A</span></span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="quizDescription" class="quiz-description">Loading quiz description...</div>
+                <form id="quizForm">
+                    <div id="questionsContainer">
+                        <!-- Questions will be dynamically inserted here -->
+                        <div class="question-card">
+                            <p class="loading-message" style="text-align: center; padding: 40px;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i>
+                                <br>Loading quiz questions...
+                            </p>
+                        </div>
+                    </div>
+                    <button type="submit" id="submitBtn" class="btn btn-submit">
+                        <i class="fas fa-paper-plane"></i> Submit Quiz
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+        import { firebaseConfig } from './firebase-config.js';
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const quizTitleElement = document.getElementById('quizTitle');
+            const quizDescriptionElement = document.getElementById('quizDescription');
+            const questionsContainer = document.getElementById('questionsContainer');
+            const questionCountElement = document.getElementById('questionCount');
+            const timeLimitElement = document.getElementById('timeLimit');
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const quizId = urlParams.get('id');
+
+            if (!quizId) {
+                alert("Quiz ID not found!");
+                window.location.href = 'index.html';
+                return;
+            }
+
+            try {
+                const quizDoc = await getDoc(doc(db, "quizzes", quizId));
+
+                if (!quizDoc.exists()) {
+                    alert("Quiz not found!");
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                const quiz = quizDoc.data();
+                quizTitleElement.textContent = quiz.title;
+                quizDescriptionElement.textContent = quiz.description;
+                questionCountElement.textContent = quiz.questions.length;
+                timeLimitElement.textContent = quiz.timeLimit ? `${quiz.timeLimit} minutes` : "No time limit";
+
+                renderQuestions(quiz.questions);
+            } catch (error) {
+                console.error("Error loading quiz:", error);
+                alert("Failed to load quiz. Please try again.");
+                window.location.href = 'index.html';
+            }
+        });
+
+        function renderQuestions(questions) {
+            const questionsContainer = document.getElementById('questionsContainer');
+            questionsContainer.innerHTML = '';
+
+            questions.forEach((question, index) => {
+                const questionCard = document.createElement('div');
+                questionCard.className = 'question-card';
+
+                const questionText = document.createElement('p');
+                questionText.className = 'question-text';
+                questionText.textContent = `${index + 1}. ${question.text}`;
+
+                const optionsList = document.createElement('ul');
+                optionsList.className = 'options';
+
+                question.options.forEach((option, optionIndex) => {
+                    const optionItem = document.createElement('li');
+                    optionItem.className = 'option-item';
+
+                    const optionLabel = document.createElement('label');
+                    optionLabel.className = 'option-label';
+
+                    const optionInput = document.createElement('input');
+                    optionInput.type = 'radio';
+                    optionInput.name = `question-${index}`;
+                    optionInput.value = optionIndex;
+
+                    optionLabel.appendChild(optionInput);
+                    optionLabel.appendChild(document.createTextNode(option));
+
+                    optionItem.appendChild(optionLabel);
+                    optionsList.appendChild(optionItem);
+                });
+
+                questionCard.appendChild(questionText);
+                questionCard.appendChild(optionsList);
+                questionsContainer.appendChild(questionCard);
+            });
+        }
+    </script>
+</body>
+</html>

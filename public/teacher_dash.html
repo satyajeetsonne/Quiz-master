@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - Quiz Master</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4a6bff;
+            --primary-dark: #3a5bee;
+            --secondary: #6c757d;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --white: #ffffff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        /* Layout */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: var(--dark);
+            color: var(--light);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--white);
+        }
+        
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+        
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: all 0.2s;
+            margin-bottom: 0.25rem;
+        }
+        
+        .nav-item.active {
+            background-color: rgba(255,255,255,0.1);
+            color: var(--white);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .nav-item:hover {
+            background-color: rgba(255,255,255,0.05);
+            color: var(--white);
+        }
+        
+        .nav-icon {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 2rem;
+        }
+        
+        /* Header */
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        /* User Profile Styles */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .user-profile:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 0.75rem;
+        }
+
+        .username {
+            font-weight: 500;
+        }
+        
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+        }
+        
+        .stat-card {
+            position: relative;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .stat-icon {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            opacity: 0.2;
+            color: var(--primary);
+        }
+        
+        .stat-title {
+            font-size: 0.9rem;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        
+        .stat-trend {
+            font-size: 0.85rem;
+            color: var(--success);
+        }
+        
+        /* Tables */
+        .table-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            font-weight: 600;
+            color: var(--secondary);
+            background-color: rgba(0,0,0,0.02);
+        }
+        
+        .table-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .action-btn {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        
+        .view-btn {
+            background-color: rgba(74, 107, 255, 0.1);
+            color: var(--primary);
+        }
+        
+        .edit-btn {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--warning);
+        }
+        
+        .delete-btn {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+        }
+        
+        /* Badge */
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .badge-success {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+        }
+        
+        .badge-warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--warning);
+        }
+        
+        .badge-danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+        }
+
+        .filter-container {
+            position: relative;
+        }
+
+        .filter-select {
+            padding: 0.5rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            background-color: white;
+            min-width: 200px;
+            font-size: 0.9rem;
+            color: var(--dark);
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(74, 107, 255, 0.1);
+        }
+
+        .filter-select:hover {
+            border-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <h1>Quiz Master</h1>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">QuizMaster</div>
+            </div>
+            <div class="sidebar-nav">
+                <a href="#" class="nav-item active">
+                    <span class="nav-icon">📊</span> <span data-translate="dashboard">Dashboard</span>
+                </a>
+                <a href="create_quiz.html" class="nav-item">
+                    <span class="nav-icon">📝</span> <span data-translate="quizzes">Quizzes</span>
+                </a>
+                <a href="teacher_results.html" class="nav-item">
+                    <span class="nav-icon">📈</span> <span data-translate="viewResults">View Quiz Results</span>
+                </a>
+                <a href="profile.html" class="nav-item">
+                    <span class="nav-icon">👤</span> <span data-translate="profile">Profile</span>
+                </a>
+                <a href="#" class="nav-item" onclick="handleSignOut()">
+                    <span class="nav-icon">🚪</span> <span data-translate="logout">Logout</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-header">
+                <h1 class="page-title" data-translate="dashboard">Dashboard</h1>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <select id="languageSelect" class="filter-select" style="min-width: 120px;" title="Select Language">
+                        <option value="en">English</option>
+                        <option value="mr">मराठी</option>
+                    </select>
+                    <a href="profile.html" class="user-profile" id="teacherProfile">
+                        <div class="profile-pic" id="teacherInitials">T</div>
+                        <span class="username" id="teacherName">Teacher Name</span>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="card-grid">
+                <div class="card stat-card" data-stat="total-quizzes">
+                    <div class="stat-icon">📝</div>
+                    <div class="stat-title" data-translate="totalQuizzes">TOTAL QUIZZES</div>
+                    <div class="stat-value">0</div>
+                    <div class="stat-trend">Loading...</div>
+                </div>
+                
+                <div class="card stat-card" data-stat="active-students">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-title" data-translate="activeStudents">ACTIVE STUDENTS</div>
+                    <div class="stat-value">0</div>
+                    <div class="stat-trend">Loading...</div>
+                </div>
+                
+                <div class="card stat-card" data-stat="avg-score">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-title" data-translate="avgScore">AVG. SCORE</div>
+                    <div class="stat-value">0%</div>
+                    <div class="stat-trend">Loading...</div>
+                </div>
+                
+                <div class="card stat-card" data-stat="quizzes-taken">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-title" data-translate="quizzesTaken">QUIZZES TAKEN</div>
+                    <div class="stat-value">0</div>
+                    <div class="stat-trend">Loading...</div>
+                </div>
+            </div>
+            
+            <!-- Recent Quizzes Table -->
+            <div class="table-card">
+                <div class="card-header">
+                    <h2 class="card-title" data-translate="recentQuizzes">Recent Quizzes</h2>
+                    <button class="btn btn-primary" onclick="window.location.href='create_quiz.html'" data-translate="createNewQuiz">Create New Quiz</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th data-translate="quizName">Quiz Name</th>
+                            <th data-translate="dateCreated">Date Created</th>
+                            <th data-translate="questions">Questions</th>
+                            <th data-translate="timesTaken">Times Taken</th>
+                            <th data-translate="actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Midterm Review: Chapter 5-8</td>
+                            <td>Mar 25, 2025</td>
+                            <td>15</td>
+                            <td>45</td>
+                            <td>
+                                <div class="table-actions">
+                                    <button class="action-btn delete-btn">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Final Exam Practice</td>
+                            <td>Mar 20, 2025</td>
+                            <td>30</td>
+                            <td>32</td>
+                            <td>
+                                <div class="table-actions">
+                                    <button class="action-btn delete-btn">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Pop Quiz: Data Structures</td>
+                            <td>Mar 15, 2025</td>
+                            <td>10</td>
+                            <td>28</td>
+                            <td>
+                                <div class="table-actions">
+                                    <button class="action-btn delete-btn">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Recent Student Activity -->
+            <div class="table-card">
+                <div class="card-header">
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <h2 class="card-title" data-translate="recentStudentActivity">Recent Student Activity</h2>
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            <div class="filter-container">
+                                <select id="quizFilter" class="filter-select" title="Filter quizzes by name">
+                                    <option value="all" data-translate="allQuizzes">All Quizzes</option>
+                                    <!-- Quiz options will be populated dynamically -->
+                                </select>
+                            </div>
+                            <button class="btn btn-primary" onclick="window.location.href='teacher_results.html'" data-translate="viewAll">View All</button>
+                        </div>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <!-- <th data-translate="studentName">Student Name</th>
+                            <th data-translate="quizName">Quiz Name</th>
+                            <th data-translate="dateTaken">Date Taken</th>
+                            <th data-translate="score">Score</th>
+                            <th data-translate="timeTaken">Time Taken</th>
+                            <th data-translate="status">Status</th>
+                             -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Alex Johnson</td>                    <!-- Name -->
+                            <td>04/05/2025</td>                      <!-- Date -->
+                            <td>85%</td>                             <!-- Score -->
+                            <td>24 mins</td>                         <!-- Time -->
+                            <td><span class="badge badge-success">Passed</span></td> <!-- Status -->
+                            <td>Midterm Review</td>                  <!-- Quiz Name -->
+                        </tr>
+                          
+                        <tr>
+                            <td>Maria Garcia</td>                    <!-- Name -->
+                            <td>04/04/2025</td>                      <!-- Date -->
+                            <td>92%</td>                             <!-- Score -->
+                            <td>40 mins</td>                         <!-- Time -->
+                            <td><span class="badge badge-success">Passed</span></td> <!-- Status -->
+                            <td>Final Exam Practice</td>             <!-- Quiz Name -->
+                        </tr>
+                          
+                        <tr>
+                            <td>James Wilson</td>                     <!-- Name -->
+                            <td>04/03/2025</td>                       <!-- Date -->
+                            <td>60%</td>                              <!-- Score -->
+                            <td>15 mins</td>                          <!-- Time -->
+                            <td><span class="badge badge-warning">Borderline</span></td> <!-- Status -->
+                            <td>Pop Quiz: Data Structures</td>        <!-- Quiz Name -->
+                        </tr>
+                          
+                        <tr>
+                            <td>Sophia Lee</td>                        <!-- Name -->
+                            <td>04/02/2025</td>                        <!-- Date -->
+                            <td>45%</td>                               <!-- Score -->
+                            <td>32 mins</td>                           <!-- Time -->
+                            <td><span class="badge badge-danger">Failed</span></td> <!-- Status -->
+                            <td>Midterm Review</td>                    <!-- Quiz Name -->
+                        </tr>
+                          
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="teacher_dash.js"></script>
+</body>
+</html>
